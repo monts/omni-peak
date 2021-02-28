@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+  web:
+    image: omni-peak/web
+    restart: always
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+    volumes:
+      - ./web/:/usr/src/app
+    
+  api:
+    image: omni-peak/api
+    restart: always
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3333:3333
+    depends_on:
+      - db
+    volumes:
+      - ./api/:/usr/src/app
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER:  "${DATABASE_NAME}"
+      POSTGRES_PASSWORD: "${DATABASE_PASS}"
+    ports:
+      - 5432
+    volumes:
+      - omni-peak-db-volume:/var/lib/postgresql
+
+volumes:
+  omni-peak-db-volume:
+    external: true
+    
